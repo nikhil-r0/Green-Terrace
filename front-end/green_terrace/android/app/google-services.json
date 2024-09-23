@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "871227241863",
+    "project_id": "green-terrace-c7f07",
+    "storage_bucket": "green-terrace-c7f07.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871227241863:android:6765dcce9c6c7d8ab58f22",
+        "android_client_info": {
+          "package_name": "com.biteons.greenterrace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1WvQsesJFOR0vv1VkTAkag6LHAUyVCFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

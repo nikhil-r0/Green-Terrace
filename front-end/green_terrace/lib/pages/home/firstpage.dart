@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:green_terrace/pages/community.dart';
-import 'package:green_terrace/pages/home.dart';
-import 'package:green_terrace/pages/market.dart';
+import 'package:green_terrace/pages/home/community.dart';
+import 'package:green_terrace/pages/home/home.dart';
+import 'package:green_terrace/pages/home/market.dart';
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});

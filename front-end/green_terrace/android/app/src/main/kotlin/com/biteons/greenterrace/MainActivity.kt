@@ -1,4 +1,4 @@
-package com.example.green_terrace
+package com.biteons.greenterrace
 
 import io.flutter.embedding.android.FlutterActivity
 
