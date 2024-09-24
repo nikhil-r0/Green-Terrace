@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:green_terrace/models/enter_terrace_size.dart'; // Import TerraceSizeInput widget
-import 'package:green_terrace/services/firestore.dart'; // Import Firestore service
+import 'package:green_terrace/models/enter_terrace_size.dart'; // Import the updated TerraceSizeInput widget
+import 'package:green_terrace/services/firestore.dart'; // Firestore service
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -10,22 +10,22 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Terrace Size Input')),  // Optional: Add an app bar
+      appBar: AppBar(title: Text('Terrace Size Input')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: TerraceSizeInput(
-            onSizeEntered: (double size) async {
+            onDataEntered: (double size, double sunlightHours, double latitude, double longitude) async {
               try {
-                // Attempt to save the terrace size to Firestore
-                await firestore.addTerraceSize(size);
+                // Save the data to Firestore
+                await firestore.addTerraceData(size, sunlightHours, latitude, longitude);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Terrace size of $size sq meters saved!')),
+                  SnackBar(content: Text('Data saved successfully!')),
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error saving terrace size: $e')),
+                  SnackBar(content: Text('Error saving data: $e')),
                 );
               }
             },

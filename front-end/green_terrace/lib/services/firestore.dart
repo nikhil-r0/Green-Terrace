@@ -5,7 +5,7 @@ class Firestore {
   final FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> addTerraceSize(double size) async {
+  Future<void> addTerraceData(double size, double sunlightHours, double latitude, double longitude) async {
     final user = auth.currentUser;
 
     if (user != null) {
@@ -16,7 +16,10 @@ class Firestore {
       await doc.set({
         'email': user.email,
         'terrace-size': size,
-      }, SetOptions(merge: true));  // Merge to avoid overwriting other fields
+        'sunlight-hours': sunlightHours,
+        'latitude': latitude,
+        'longitude': longitude,
+      }, SetOptions(merge: true));
     } else {
       throw Exception("No user is logged in.");
     }
