@@ -135,8 +135,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
           // for(var plant in responseData['recommended_crops']){
           //   _predicted_crops += '${plant}\n';
           // } 
-          _output = 'Crops Predicted: ${responseData['recommended_crops']}\n'
-              'Total Savings: ${responseData['total_savings']}\n';
+          _output = 'Crops Predicted: ${responseData['predicted_crops']}\n';
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
