@@ -17,8 +17,8 @@ class Firestore {
         'email': user.email,
         'terrace-size': size,
         'sunlight-hours': sunlightHours,
-        'latitude': latitude,
-        'longitude': longitude,
+        'latitude': latitude.round(),
+        'longitude': longitude.round(),
       }, SetOptions(merge: true));
     } else {
       throw Exception("No user is logged in.");

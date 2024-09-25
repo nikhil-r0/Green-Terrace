@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class TerraceSizeInput extends StatefulWidget {
   final Function(double, double, double, double) onDataEntered; // Callback to pass the data back to parent
@@ -16,6 +18,9 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
   String? _selectedSunlightHours;
   double? _latitude;
   double? _longitude;
+  bool _isFetchingLocation = false; // Loading state for fetching location
+  bool _isSubmitting = false; // Loading state for submitting data
+  String? _output; // Variable to store API output
 
   @override
   void dispose() {
@@ -24,44 +29,138 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
   }
 
   Future<void> _getLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    // Check location permission
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // Get the current position
-    Position position = await Geolocator.getCurrentPosition();
     setState(() {
-      _latitude = position.latitude;
-      _longitude = position.longitude;
+      _isFetchingLocation = true; // Show loading indicator
     });
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // If location services are disabled, show a dialog prompting the user to enable it
+        _showLocationServiceDialog();
+        return;
+      }
+
+      // Check location permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw 'Location permissions are denied.';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Location permissions are permanently denied.';
+      }
+
+      // Get the current position
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error getting location: $e'),
+      ));
+    } finally {
+      setState(() {
+        _isFetchingLocation = false; // Hide loading indicator
+      });
+    }
+  }
+
+  // Function to show dialog if location services are disabled
+  void _showLocationServiceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enable Location Services'),
+          content: Text('Location services are disabled. Please enable them in settings.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _submitData() async {
+    if (!_formKey.currentState!.validate() || _latitude == null || _longitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please complete all fields and obtain location.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true; // Show loading indicator during submission
+    });
+
+    double terraceSize = double.parse(_sizeController.text);
+    double sunlightHours = double.parse(_selectedSunlightHours!);
+
+    // Send the data to the parent widget via callback
+    widget.onDataEntered(terraceSize, sunlightHours, _latitude!, _longitude!);
+
+    // Prepare the data for the HTTP POST request
+    Map<String, dynamic> requestData = {
+      'latitude': _latitude,
+      'longitude': _longitude,
+      'sunlight': sunlightHours,
+      'area': terraceSize,
+    };
+
+    try {
+      // Send the HTTP POST request
+      var url = Uri.parse('http://192.168.45.89:5000/predict_crops');
+      var response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestData),
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the response data
+        var responseData = jsonDecode(response.body);
+        setState(() {
+          // var _predicted_crops;
+          // for(var plant in responseData['recommended_crops']){
+          //   _predicted_crops += '${plant}\n';
+          // } 
+          _output = 'Crops Predicted: ${responseData['recommended_crops']}\n'
+              'Total Savings: ${responseData['total_savings']}\n';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting data: $e')),
+      );
+    } finally {
+      setState(() {
+        _isSubmitting = false; // Hide loading indicator after submission
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: [
+          // Terrace Size Input
           TextFormField(
             controller: _sizeController,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -110,49 +209,41 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
 
           // Button to get location
           ElevatedButton(
-            onPressed: () async {
-              try {
-                await _getLocation();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'Location obtained: ($_latitude, $_longitude)'),
-                ));
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Error getting location: $e'),
-                ));
-              }
-            },
-            child: Text("Get Current Location"),
+            onPressed: _isFetchingLocation
+                ? null // Disable button while fetching location
+                : () async {
+                    await _getLocation();
+                    if (_latitude != null && _longitude != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            'Location obtained: (${_latitude!.toStringAsFixed(2)}, ${_longitude!.toStringAsFixed(2)})'),
+                      ));
+                    }
+                  },
+            child: _isFetchingLocation
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Get Current Location"),
           ),
           SizedBox(height: 20),
 
+          // Submit Button
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate() &&
-                  _latitude != null &&
-                  _longitude != null) {
-                // On successful validation and location, parse the double and send it back to parent
-                double terraceSize = double.parse(_sizeController.text);
-                double sunlightHours = double.parse(_selectedSunlightHours!);
-
-                // Pass the data back to parent
-                widget.onDataEntered(terraceSize, sunlightHours, _latitude!, _longitude!);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text(
-                          'Terrace Size: $terraceSize sq meters, Sunlight Hours: $sunlightHours, Location: ($_latitude, $_longitude)')),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text(
-                          'Please complete all fields and obtain location.')),
-                );
-              }
-            },
-            child: Text("Submit"),
+            onPressed: _isSubmitting
+                ? null // Disable button while submitting data
+                : _submitData,
+            child: _isSubmitting
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Submit"),
           ),
+
+          // Output Display
+          if (_output != null) ...[
+            SizedBox(height: 20),
+            Text(
+              _output!,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
         ],
       ),
     );
