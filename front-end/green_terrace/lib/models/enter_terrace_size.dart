@@ -9,6 +9,7 @@ class TerraceSizeInput extends StatefulWidget {
   const TerraceSizeInput({required this.onDataEntered, super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TerraceSizeInputState createState() => _TerraceSizeInputState();
 }
 

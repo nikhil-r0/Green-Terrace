@@ -42,6 +42,7 @@ dependencies:
   firebase_ui_auth: ^1.15.0
   http: ^1.2.2
   geolocator: ^13.0.1
+  flutter_quill: ^10.8.0
 
 dev_dependencies:
   flutter_test:

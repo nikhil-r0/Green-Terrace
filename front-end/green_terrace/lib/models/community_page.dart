@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:green_terrace/services/firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'create_post_page.dart';
+import 'post_widget.dart';
 
-class CommunityPage extends StatelessWidget {
+class CommunityPage extends StatefulWidget {
+  @override
+  _CommunityPageState createState() => _CommunityPageState();
+}
+
+class _CommunityPageState extends State<CommunityPage> {
   final Firestore _firestoreService = Firestore();
+  String _searchTerm = '';
 
   // Function to display community posts
   Widget _buildCommunityPosts() {
@@ -12,67 +21,24 @@ class CommunityPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
         final posts = snapshot.data!.docs;
-        if (posts.isEmpty) {
-          return Center(child: Text('No tips or guides available.'));
+
+        final filteredPosts = posts.where((post) {
+          String postTitle = post['title'].toString().toLowerCase();
+          return postTitle.contains(_searchTerm.toLowerCase());
+        }).toList();
+
+        if (filteredPosts.isEmpty) {
+          return Center(child: Text('No posts found.'));
         }
+
         return ListView.builder(
-          itemCount: posts.length,
+          itemCount: filteredPosts.length,
           itemBuilder: (context, index) {
-            final post = posts[index];
-            return Card(
-              child: ListTile(
-                title: Text(post['title']),
-                subtitle: Text(post['description']),
-              ),
-            );
+            final post = filteredPosts[index];
+            final userId = FirebaseAuth.instance.currentUser?.uid;
+            final isCurrentUser = post['authorId'] == userId;
+            return PostWidget(post: post, isCurrentUser: isCurrentUser);
           },
-        );
-      },
-    );
-  }
-
-  // Function to open a dialog for posting a new community guide
-  void _openPostDialog(BuildContext context) {
-    final TextEditingController _titleController = TextEditingController();
-    final TextEditingController _descriptionController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Post Guide or Tip'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(labelText: 'Title'),
-                ),
-                TextField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
-                  await _firestoreService.addCommunityPost(
-                    _titleController.text,
-                    _descriptionController.text,
-                  );
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text('Post'),
-            ),
-          ],
         );
       },
     );
@@ -81,15 +47,43 @@ class CommunityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Community')),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _buildCommunityPosts(),
+      appBar: AppBar(
+        title: Text('Community'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Icon(Icons.search),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchTerm = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Search posts',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          Expanded(child: _buildCommunityPosts()), // Scrollable posts
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _openPostDialog(context),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => CreatePostPage()),
+          );
+        },
         child: Icon(Icons.add),
-        tooltip: 'Post New Tip',
+        tooltip: 'Create New Post',
       ),
     );
   }
