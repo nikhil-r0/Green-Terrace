@@ -10,7 +10,7 @@ class PostWidget extends StatelessWidget {
   final Firestore _firestoreService = Firestore();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  PostWidget({required this.post, required this.isCurrentUser});
+  PostWidget({super.key, required this.post, required this.isCurrentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class PostWidget extends StatelessWidget {
 
   // Build the comment input field
   Widget _buildCommentInput(String postId , BuildContext context){
-    final TextEditingController _commentController = TextEditingController();
+    final TextEditingController commentController = TextEditingController();
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -135,7 +135,7 @@ class PostWidget extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
-              controller: _commentController,
+              controller: commentController,
               decoration: InputDecoration(
                 labelText: 'Add a comment...',
                 border: OutlineInputBorder(),
@@ -145,9 +145,9 @@ class PostWidget extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.send),
             onPressed: () async {
-              if (_commentController.text.isNotEmpty) {
-                await _firestoreService.addComment(postId, _commentController.text);
-                _commentController.clear(); // Clear the input after submitting
+              if (commentController.text.isNotEmpty) {
+                await _firestoreService.addComment(postId, commentController.text);
+                commentController.clear(); // Clear the input after submitting
               }
             },
           ),

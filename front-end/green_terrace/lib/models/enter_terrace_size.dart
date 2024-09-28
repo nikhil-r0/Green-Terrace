@@ -4,45 +4,49 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
 class TerraceSizeInput extends StatefulWidget {
-  final Function(double, double, double, double) onDataEntered; // Callback to pass the data back to parent
+  final Function(double, double, double, double, double, List<String>) onDataEntered; // Callback to pass data back to parent
 
   const TerraceSizeInput({required this.onDataEntered, super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TerraceSizeInputState createState() => _TerraceSizeInputState();
 }
 
 class _TerraceSizeInputState extends State<TerraceSizeInput> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _sizeController = TextEditingController();
-  String? _selectedSunlightHours;
+  final TextEditingController _budgetController = TextEditingController();
+
+  String? _selectedMaximizeOption;
+  List<String> _selectedTypes = [];
   double? _latitude;
   double? _longitude;
-  bool _isFetchingLocation = false; // Loading state for fetching location
-  bool _isSubmitting = false; // Loading state for submitting data
-  String? _output; // Variable to store API output
+  bool _isFetchingLocation = false;
+  bool _isSubmitting = false;
+  List<Map<String, dynamic>>? _recommendedPlants;
+  String? _outputMessage;
 
   @override
   void dispose() {
     _sizeController.dispose();
+    _budgetController.dispose();
     super.dispose();
   }
 
+  // Simulate available types for selection
+  final List<String> _allTypes = ['Vegetables', 'Fruits', 'Legumes', 'Flowers', 'Medicinal'];
+
   Future<void> _getLocation() async {
     setState(() {
-      _isFetchingLocation = true; // Show loading indicator
+      _isFetchingLocation = true;
     });
     try {
-      // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // If location services are disabled, show a dialog prompting the user to enable it
         _showLocationServiceDialog();
         return;
       }
 
-      // Check location permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -55,7 +59,6 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
         throw 'Location permissions are permanently denied.';
       }
 
-      // Get the current position
       Position position = await Geolocator.getCurrentPosition();
       setState(() {
         _latitude = position.latitude;
@@ -67,12 +70,11 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
       ));
     } finally {
       setState(() {
-        _isFetchingLocation = false; // Hide loading indicator
+        _isFetchingLocation = false;
       });
     }
   }
 
-  // Function to show dialog if location services are disabled
   void _showLocationServiceDialog() {
     showDialog(
       context: context,
@@ -83,7 +85,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.of(context).pop();
               },
               child: Text('OK'),
             ),
@@ -92,6 +94,22 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
       },
     );
   }
+
+  void _showMultiSelectDialog() async {
+    final List<String> selectedValues = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelectDialog(
+          allItems: _allTypes,
+          initiallySelectedItems: _selectedTypes,
+        );
+      },
+    );
+
+    setState(() {
+      _selectedTypes = selectedValues;
+    });
+    }
 
   Future<void> _submitData() async {
     if (!_formKey.currentState!.validate() || _latitude == null || _longitude == null) {
@@ -102,26 +120,31 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
     }
 
     setState(() {
-      _isSubmitting = true; // Show loading indicator during submission
+      _isSubmitting = true;
+      _recommendedPlants = null;
+      _outputMessage = null;
     });
 
     double terraceSize = double.parse(_sizeController.text);
-    double sunlightHours = double.parse(_selectedSunlightHours!);
+    double budget = double.parse(_budgetController.text);
 
-    // Send the data to the parent widget via callback
-    widget.onDataEntered(terraceSize, sunlightHours, _latitude!, _longitude!);
+    // Determine weights based on the selected maximize option
+    double weightSavings = _selectedMaximizeOption == 'Savings' ? 0.6 : 0.4;
+    double weightCarbonAbsorption = _selectedMaximizeOption == 'Carbon Absorption' ? 0.6 : 0.4;
 
-    // Prepare the data for the HTTP POST request
+    // Prepare the request data
     Map<String, dynamic> requestData = {
+      'terrace_size': terraceSize,
+      'budget': budget,
       'latitude': _latitude,
       'longitude': _longitude,
-      'sunlight': sunlightHours,
-      'area': terraceSize,
+      'savings_weight': weightSavings,
+      'weight_carbon_absorption': weightCarbonAbsorption,
+      'types': _selectedTypes,
     };
 
     try {
-      // Send the HTTP POST request
-      var url = Uri.parse('http://192.168.45.89:5000/predict_crops');
+      var url = Uri.parse('http://192.168.29.225:5000/recommend_crops');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -129,27 +152,34 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
       );
 
       if (response.statusCode == 200) {
-        // Parse the response data
         var responseData = jsonDecode(response.body);
-        setState(() {
-          // var _predicted_crops;
-          // for(var plant in responseData['recommended_crops']){
-          //   _predicted_crops += '${plant}\n';
-          // } 
-          _output = 'Crops Predicted: ${responseData['predicted_crops']}\n';
-        });
+
+        if (responseData.containsKey('error')) {
+          setState(() {
+            _outputMessage = responseData['error'];
+          });
+        } else if (responseData['recommended_plants'].isEmpty) {
+          setState(() {
+            _outputMessage = "No plants were recommended based on your criteria.";
+          });
+        } else {
+          setState(() {
+            _recommendedPlants = List<Map<String, dynamic>>.from(responseData['recommended_plants']);
+            _outputMessage = null;
+          });
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.statusCode}')),
-        );
+        setState(() {
+          _outputMessage = 'Error: ${response.statusCode}';
+        });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error submitting data: $e')),
-      );
+      setState(() {
+        _outputMessage = 'Error submitting data: $e';
+      });
     } finally {
       setState(() {
-        _isSubmitting = false; // Hide loading indicator after submission
+        _isSubmitting = false;
       });
     }
   }
@@ -160,7 +190,6 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
       key: _formKey,
       child: ListView(
         children: [
-          // Terrace Size Input
           TextFormField(
             controller: _sizeController,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -180,37 +209,65 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
             },
           ),
           SizedBox(height: 20),
-
-          // Dropdown for sunlight hours
-          DropdownButtonFormField<String>(
+          TextFormField(
+            controller: _budgetController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Average Sunlight Hours',
+              labelText: 'Budget',
               border: OutlineInputBorder(),
             ),
-            items: const [
-              DropdownMenuItem(value: '4', child: Text('4 Hours')),
-              DropdownMenuItem(value: '6', child: Text('6 Hours')),
-              DropdownMenuItem(value: '8', child: Text('8 Hours')),
-              DropdownMenuItem(value: '10', child: Text('10+ Hours')),
-            ],
-            onChanged: (value) {
-              setState(() {
-                _selectedSunlightHours = value;
-              });
-            },
             validator: (value) {
-              if (value == null) {
-                return 'Please select sunlight hours';
+              if (value == null || value.isEmpty) {
+                return 'Please enter a budget';
+              }
+              final budget = double.tryParse(value);
+              if (budget == null || budget <= 0) {
+                return 'Please enter a valid number';
               }
               return null;
             },
           ),
           SizedBox(height: 20),
 
+          // Dropdown for Maximize Option
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'What do you want to maximize?',
+              border: OutlineInputBorder(),
+            ),
+            items: const [
+              DropdownMenuItem(value: 'Savings', child: Text('Savings')),
+              DropdownMenuItem(value: 'Carbon Absorption', child: Text('Carbon Absorption')),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedMaximizeOption = value;
+              });
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Please select an option';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 20),
+
+          // Custom Button for selecting multiple crop types
+          ListTile(
+            title: Text("Select Crop Types"),
+            subtitle: Text(_selectedTypes.isNotEmpty ? _selectedTypes.join(", ") : "None selected"),
+            trailing: Icon(Icons.arrow_drop_down),
+            onTap: _showMultiSelectDialog,
+          ),
+          SizedBox(height: 20),
+
+          SizedBox(height: 20),
+
           // Button to get location
           ElevatedButton(
             onPressed: _isFetchingLocation
-                ? null // Disable button while fetching location
+                ? null
                 : () async {
                     await _getLocation();
                     if (_latitude != null && _longitude != null) {
@@ -228,24 +285,120 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
 
           // Submit Button
           ElevatedButton(
-            onPressed: _isSubmitting
-                ? null // Disable button while submitting data
-                : _submitData,
+            onPressed: _isSubmitting ? null : _submitData,
             child: _isSubmitting
                 ? CircularProgressIndicator(color: Colors.white)
                 : Text("Submit"),
           ),
 
-          // Output Display
-          if (_output != null) ...[
-            SizedBox(height: 20),
-            Text(
-              _output!,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
+          SizedBox(height: 20),
+
+          // Display the output
+          _buildOutput(),
         ],
       ),
     );
   }
+
+  Widget _buildOutput() {
+    if (_outputMessage != null) {
+      return Text(
+        _outputMessage!,
+        style: TextStyle(color: Colors.red, fontSize: 16),
+      );
+    }
+
+    if (_recommendedPlants != null && _recommendedPlants!.isNotEmpty) {
+      return Column(
+        children: _recommendedPlants!.map((plant) {
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    plant['label'],
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 8),
+                  Text('Savings: ${plant['savings'].toStringAsFixed(2)}'),
+                  Text(
+                      'Carbon Absorption: ${plant['carbon_absorption'].toStringAsFixed(2)} kg'),
+                  Text('Growing Price: ${plant['growing_price'].toStringAsFixed(2)}'),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      );
+    }
+
+    return SizedBox.shrink(); // Return an empty widget if nothing to display
+  }
+}
+
+class _MultiSelectDialogState extends State<MultiSelectDialog> {
+  late List<String> _selectedItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedItems = widget.initiallySelectedItems.toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Select Crop Types"),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: widget.allItems.map((type) {
+            return CheckboxListTile(
+              title: Text(type),
+              value: _selectedItems.contains(type),
+              onChanged: (bool? value) {
+                setState(() {
+                  if (value == true) {
+                    _selectedItems.add(type);
+                  } else {
+                    _selectedItems.remove(type);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Cancel"),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop(_selectedItems);
+          },
+          child: Text("OK"),
+        ),
+      ],
+    );
+  }
+}
+
+class MultiSelectDialog extends StatefulWidget {
+  final List<String> allItems;
+  final List<String> initiallySelectedItems;
+
+  const MultiSelectDialog({
+    required this.allItems,
+    required this.initiallySelectedItems,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _MultiSelectDialogState createState() => _MultiSelectDialogState();
 }

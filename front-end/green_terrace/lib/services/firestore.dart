@@ -5,21 +5,27 @@ class Firestore {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> addTerraceData(double size, double sunlightHours, double latitude, double longitude) async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      String uid = user.uid;
-      CollectionReference users = _firestore.collection('users');
-      DocumentReference doc = users.doc(uid);
-      await doc.set({
-        'email': user.email,
-        'terrace-size': size,
-        'sunlight-hours': sunlightHours,
-        'latitude': latitude.round(),
-        'longitude': longitude.round(),
-      }, SetOptions(merge: true));
-    } else {
-      throw Exception("No user is logged in.");
+  // Function to add terrace data to Firestore
+  Future<void> addTerraceData({
+    required double size,
+    required double sunlightHours,
+    required double latitude,
+    required double longitude,
+    required double budget, // New field for budget
+    required List<String> types, // Added to capture types of crops
+  }) async {
+    try {
+      await _firestore.collection('terrace_data').add({
+        'size': size,
+        'sunlight_hours': sunlightHours,
+        'latitude': latitude,
+        'longitude': longitude,
+        'budget': budget, // Add budget to Firestore
+        'types': types, // Add selected types of crops
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Error adding terrace data: $e');
     }
   }
 

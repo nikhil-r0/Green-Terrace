@@ -6,6 +6,8 @@ import 'create_post_page.dart';
 import 'post_widget.dart';
 
 class CommunityPage extends StatefulWidget {
+  const CommunityPage({super.key});
+
   @override
   _CommunityPageState createState() => _CommunityPageState();
 }
@@ -49,9 +51,9 @@ class _CommunityPageState extends State<CommunityPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Community'),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: Icon(Icons.search),
           ),
         ],
@@ -82,8 +84,8 @@ class _CommunityPageState extends State<CommunityPage> {
             MaterialPageRoute(builder: (context) => CreatePostPage()),
           );
         },
-        child: Icon(Icons.add),
         tooltip: 'Create New Post',
+        child: Icon(Icons.add),
       ),
     );
   }

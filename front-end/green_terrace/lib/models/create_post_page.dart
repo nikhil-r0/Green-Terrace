@@ -3,6 +3,8 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:green_terrace/services/firestore.dart';
 
 class CreatePostPage extends StatefulWidget {
+  const CreatePostPage({super.key});
+
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
 }

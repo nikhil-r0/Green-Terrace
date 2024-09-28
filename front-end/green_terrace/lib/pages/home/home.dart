@@ -15,10 +15,17 @@ class Home extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: TerraceSizeInput(
-            onDataEntered: (double size, double sunlightHours, double latitude, double longitude) async {
+            onDataEntered: (double size, double sunlightHours, double latitude, double longitude, double budget, List<String> types) async {
               try {
                 // Save the data to Firestore
-                await firestore.addTerraceData(size, sunlightHours, latitude, longitude);
+                await firestore.addTerraceData(
+                  size: size,
+                  sunlightHours: sunlightHours,
+                  latitude: latitude,
+                  longitude: longitude,
+                  budget: budget,
+                  types: types,
+                );
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Data saved successfully!')),

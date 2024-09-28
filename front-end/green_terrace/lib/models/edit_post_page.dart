@@ -5,7 +5,7 @@ import 'package:green_terrace/services/firestore.dart';
 
 class EditPostPage extends StatefulWidget {
   final QueryDocumentSnapshot post;
-  EditPostPage({required this.post});
+  const EditPostPage({super.key, required this.post});
 
   @override
   _EditPostPageState createState() => _EditPostPageState();

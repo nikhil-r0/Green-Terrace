@@ -4,6 +4,8 @@ import 'package:green_terrace/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MarketPage extends StatefulWidget {
+  const MarketPage({super.key});
+
   @override
   _MarketPageState createState() => _MarketPageState();
 }
@@ -98,8 +100,8 @@ class _MarketPageState extends State<MarketPage> {
 
   // Function to open dialog to edit a post
   void _openEditDialog(QueryDocumentSnapshot item) {
-    final TextEditingController _quantityController = TextEditingController(text: item['quantity'].toString());
-    final TextEditingController _priceController = TextEditingController(text: item['price'].toString());
+    final TextEditingController quantityController = TextEditingController(text: item['quantity'].toString());
+    final TextEditingController priceController = TextEditingController(text: item['price'].toString());
 
     showDialog(
       context: context,
@@ -110,12 +112,12 @@ class _MarketPageState extends State<MarketPage> {
             child: Column(
               children: [
                 TextField(
-                  controller: _quantityController,
+                  controller: quantityController,
                   decoration: InputDecoration(labelText: 'Quantity (in kg)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
-                  controller: _priceController,
+                  controller: priceController,
                   decoration: InputDecoration(labelText: 'Price (₹ per kg)'),
                   keyboardType: TextInputType.number,
                 ),
@@ -130,8 +132,8 @@ class _MarketPageState extends State<MarketPage> {
             TextButton(
               onPressed: () async {
                 Map<String, dynamic> updatedData = {
-                  'quantity': int.parse(_quantityController.text),
-                  'price': double.parse(_priceController.text),
+                  'quantity': int.parse(quantityController.text),
+                  'price': double.parse(priceController.text),
                 };
                 await _firestoreService.updateMarketItem(item.id, updatedData);
                 Navigator.of(context).pop();
@@ -170,19 +172,19 @@ class _MarketPageState extends State<MarketPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openPostDialog(context),
-        child: Icon(Icons.add),
         tooltip: 'Post New Offer',
+        child: Icon(Icons.add),
       ),
     );
   }
 
   // Function to open dialog for posting new offer
   void _openPostDialog(BuildContext context) {
-    final TextEditingController _quantityController = TextEditingController();
-    final TextEditingController _priceController = TextEditingController();
-    bool _isBarter = false;
-    bool _isForSale = true;
-    String? _selectedBarterCrop;
+    final TextEditingController quantityController = TextEditingController();
+    final TextEditingController priceController = TextEditingController();
+    bool isBarter = false;
+    bool isForSale = true;
+    String? selectedBarterCrop;
 
     showDialog(
       context: context,
@@ -203,7 +205,7 @@ class _MarketPageState extends State<MarketPage> {
                       onChanged: (value) {
                         setState(() {
                           _selectedCrop = value!;
-                          _selectedBarterCrop = null; // Reset barter crop if the vegetable being sold is changed
+                          selectedBarterCrop = null; // Reset barter crop if the vegetable being sold is changed
                         });
                       },
                       decoration: InputDecoration(
@@ -212,15 +214,15 @@ class _MarketPageState extends State<MarketPage> {
                       ),
                     ),
                     TextField(
-                      controller: _quantityController,
+                      controller: quantityController,
                       decoration: InputDecoration(labelText: 'Quantity (in kg)'),
                       keyboardType: TextInputType.number,
                     ),
                     
                     // If Barter is selected, show dropdown to select barter vegetable
-                    if (_isBarter) 
+                    if (isBarter) 
                       DropdownButtonFormField<String>(
-                        value: _selectedBarterCrop,
+                        value: selectedBarterCrop,
                         items: _cropTypes
                             .where((crop) => crop != _selectedCrop) // Exclude the selected vegetable
                             .map((crop) {
@@ -228,7 +230,7 @@ class _MarketPageState extends State<MarketPage> {
                             }).toList(),
                         onChanged: (value) {
                           setState(() {
-                            _selectedBarterCrop = value!;
+                            selectedBarterCrop = value!;
                           });
                         },
                         decoration: InputDecoration(
@@ -238,31 +240,31 @@ class _MarketPageState extends State<MarketPage> {
                       )
                     else 
                       TextField(
-                        controller: _priceController,
+                        controller: priceController,
                         decoration: InputDecoration(labelText: 'Price (₹ per kg)'),
                         keyboardType: TextInputType.number,
-                        enabled: _isForSale, // Disable price if barter is selected
+                        enabled: isForSale, // Disable price if barter is selected
                       ),
                     
                     Row(
                       children: [
                         Checkbox(
-                          value: _isBarter,
+                          value: isBarter,
                           onChanged: (value) {
                             setState(() {
-                              _isBarter = value!;
-                              _isForSale = !_isBarter; // Automatically uncheck "For Sale"
-                              _selectedBarterCrop = null; // Reset barter crop when switching to barter
+                              isBarter = value!;
+                              isForSale = !isBarter; // Automatically uncheck "For Sale"
+                              selectedBarterCrop = null; // Reset barter crop when switching to barter
                             });
                           },
                         ),
                         Text('Barter'),
                         Checkbox(
-                          value: _isForSale,
+                          value: isForSale,
                           onChanged: (value) {
                             setState(() {
-                              _isForSale = value!;
-                              _isBarter = !_isForSale; // Automatically uncheck "Barter"
+                              isForSale = value!;
+                              isBarter = !isForSale; // Automatically uncheck "Barter"
                             });
                           },
                         ),
@@ -279,20 +281,20 @@ class _MarketPageState extends State<MarketPage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    if (_quantityController.text.isNotEmpty &&
-                        (_priceController.text.isNotEmpty || _isBarter)) {
+                    if (quantityController.text.isNotEmpty &&
+                        (priceController.text.isNotEmpty || isBarter)) {
                       // Ensure the barter crop is selected if barter is chosen
-                      if (_isBarter && _selectedBarterCrop == null) {
+                      if (isBarter && selectedBarterCrop == null) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select a vegetable to barter with.')));
                         return;
                       }
 
                       await _firestoreService.addVegetableToMarket(
                         _selectedCrop!,
-                        double.parse(_quantityController.text),
-                        _isBarter ? 0.0 : double.parse(_priceController.text),
-                        _isBarter,
-                        _isForSale,
+                        double.parse(quantityController.text),
+                        isBarter ? 0.0 : double.parse(priceController.text),
+                        isBarter,
+                        isForSale,
                       );
                       Navigator.of(context).pop();
                     }

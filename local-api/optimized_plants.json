@@ -1,0 +1,32 @@
+{
+    "total_savings": 1650.0,
+    "total_carbon_absorbed": 0.0205,
+    "total_plants_grown": 35.0,
+    "total_budget_used": 2000.0,
+    "recommended_plants": [
+        {
+            "label": "Papaya",
+            "carbon_absorption": 0.0007,
+            "savings": 20,
+            "growing_price": 40
+        },
+        {
+            "label": "Fig",
+            "carbon_absorption": 0.0005,
+            "savings": 90,
+            "growing_price": 90
+        },
+        {
+            "label": "Guava",
+            "carbon_absorption": 0.0006,
+            "savings": 20,
+            "growing_price": 30
+        },
+        {
+            "label": "Passion Fruit",
+            "carbon_absorption": 0.0005,
+            "savings": 70,
+            "growing_price": 80
+        }
+    ]
+}
