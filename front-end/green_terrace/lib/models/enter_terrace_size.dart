@@ -144,7 +144,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
     };
 
     try {
-      var url = Uri.parse('http://192.168.29.225:5000/recommend_crops');
+      var url = Uri.parse('https://0a91-2405-201-d046-b810-877a-c790-ba33-ccd9.ngrok-free.app/recommend_crops');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -396,8 +396,8 @@ class MultiSelectDialog extends StatefulWidget {
   const MultiSelectDialog({
     required this.allItems,
     required this.initiallySelectedItems,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _MultiSelectDialogState createState() => _MultiSelectDialogState();
