@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from sklearn.model_selection import train_test_split
-from weather_data import get_weather_data
+from models.weather_data import get_weather_data
 
 # Import and patch scikit-learn with Intel optimizations
 from sklearnex import patch_sklearn

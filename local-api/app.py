@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from models.plant_optimization import recomend_crops
+from models.plant_optimization import recommend_crops
 import logging
 
 # Set up logging
@@ -14,7 +14,7 @@ def api_recommend_crops():
         logger.info("Received request for /recommend_crops")
         data = request.json
 
-        result = recomend_crops(
+        result = recommend_crops(
             terrace_size=data['terrace_size'],
             latitude=data['latitude'],
             longitude=data['longitude'],

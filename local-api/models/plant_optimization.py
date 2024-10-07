@@ -2,8 +2,8 @@ import math
 import json
 from collections import defaultdict
 import logging
-from crp_prdct import crop_prediction_model
-from mrkt_price import get_market_prices
+from models.crp_prdct import crop_prediction_model
+from models.mrkt_price import get_market_prices
 
 # Set up logging for debugging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
