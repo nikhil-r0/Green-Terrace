@@ -30,11 +30,11 @@ def get_weather_data(latitude, longitude, start_date, end_date):
     if response.status_code == 200:
         data = response.json()['daily']
         
-        # Calculate averages
-        avg_temp_max = sum(data['temperature_2m_max']) / len(data['temperature_2m_max'])
-        avg_temp_min = sum(data['temperature_2m_min']) / len(data['temperature_2m_min'])
+        # Calculate averages (cast temperature to int before averaging)
+        avg_temp_max = int(sum(data['temperature_2m_max']) / len(data['temperature_2m_max']))
+        avg_temp_min = int(sum(data['temperature_2m_min']) / len(data['temperature_2m_min']))
         avg_rain_sum = sum(data['rain_sum']) / len(data['rain_sum'])
-        avg_daylight_duration = sum(data['sunshine_duration']) / len(data['sunshine_duration'])
+        avg_daylight_duration = int(sum(data['sunshine_duration']) / len(data['sunshine_duration']))
         
         return {
             "avg_temp_max": avg_temp_max,
@@ -46,11 +46,11 @@ def get_weather_data(latitude, longitude, start_date, end_date):
         raise Exception(f"Failed to fetch weather data. Status code: {response.status_code}")
 
 # If you want to test the function independently
-if __name__ == "__main__":
-    latitude = 19.0760
-    longitude = 72.8777
-    start_date = "2024-09-01"
-    end_date = "2024-09-20"
+# if __name__ == "__main__":
+#      latitude = 19.0760
+#      longitude = 72.8777
+#      start_date = "2024-09-01"
+#      end_date = "2024-09-20"
     
-    weather_data = get_weather_data(latitude, longitude, start_date, end_date)
-    print(weather_data)
+#      weather_data = get_weather_data(latitude, longitude, start_date, end_date)
+#      print(weather_data)

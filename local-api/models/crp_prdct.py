@@ -1,8 +1,14 @@
 import json
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from models.get_weather_data import get_weather_data
+from weather_data import get_weather_data
+
+# Import and patch scikit-learn with Intel optimizations
+from sklearnex import patch_sklearn
+patch_sklearn()
+
+# Now import the RandomForestClassifier from the patched sklearn
+from sklearn.ensemble import RandomForestClassifier
 
 def load_plant_data(file_path):
     with open(file_path, 'r') as file:
@@ -33,6 +39,7 @@ def prepare_data(plant_data, climate_data):
     return np.array(X), np.array(y)
 
 def train_model(X_train, y_train):
+    # Using the Intel-optimized RandomForestClassifier
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     return model
@@ -47,6 +54,7 @@ def predict_suitability(plant, model):
     return model.predict([features])[0]
 
 def categorize_predicted_plants(plant_data, model):
+    count=0
     predicted_plants = {}
 
     for category in plant_data:
@@ -55,12 +63,15 @@ def categorize_predicted_plants(plant_data, model):
             for plant in plants[1]:
                 if predict_suitability(plant, model):
                     predicted_plants[plants[0]].append(plant)
+                    count=count+1
+    print(count)
     
     return predicted_plants
 
+
 def crop_prediction_model(latitude, longitude):
     # Load plant data
-    plant_data = load_plant_data('plants.json')
+    plant_data = load_plant_data('plant_data.json')
     
     # Fetch weather data
     weather_data = get_weather_data(latitude, longitude, "2024-09-01", "2024-09-20")
@@ -72,7 +83,7 @@ def crop_prediction_model(latitude, longitude):
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Train the model
+    # Train the model using Intel-optimized RandomForestClassifier
     model = train_model(X_train, y_train)
     
     # Predict and categorize plants
@@ -81,6 +92,6 @@ def crop_prediction_model(latitude, longitude):
     return predicted_plants
 
 # If you want to test the function independently
-if __name__ == "__main__":
-    result = crop_prediction_model(12,72)
-    print(json.dumps(result, indent=2))
+# if __name__ == "__main__":
+#     result = crop_prediction_model(12,72)
+#     print(json.dumps(result, indent=2))

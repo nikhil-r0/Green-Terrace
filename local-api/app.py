@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from models.plant_optm import recomend_crops
+from models.plant_optimization import recomend_crops
 import logging
 
 # Set up logging
