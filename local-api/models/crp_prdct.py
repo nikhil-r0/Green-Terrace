@@ -91,7 +91,6 @@ def crop_prediction_model(latitude, longitude):
     
     return predicted_plants
 
-# If you want to test the function independently
 # if __name__ == "__main__":
 #     result = crop_prediction_model(12,72)
 #     print(json.dumps(result, indent=2))
