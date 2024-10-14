@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:green_terrace/models/enter_terrace_size.dart'; // Import the updated TerraceSizeInput widget
+import 'package:green_terrace/pages/home/chatbot.dart';
 import 'package:green_terrace/services/firestore.dart'; // Firestore service
 
 class Home extends StatelessWidget {
@@ -10,6 +11,14 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => Chatbot()),
+          );
+        },
+        child: Icon(Icons.chat_bubble_outline),
+      ),
       appBar: AppBar(title: Text('Terrace Size Input')),
       body: Center(
         child: Padding(
