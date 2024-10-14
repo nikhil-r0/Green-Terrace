@@ -1,0 +1,51 @@
+Category,Label,seed_cost,perennial,fert_req,pest_req,fert_name,fert_cost,pest_name,pest_cost,add_maintenance,days_to_harvest
+Fruits,Strawberry,7,TRUE,FALSE,TRUE,Vermicompost,44,Neem Oil,15,45,75
+Fruits,Lemon,2,TRUE,FALSE,FALSE,Manure,9,Garlic Spray,10,80,180
+Fruits,Passion Fruit,7,TRUE,TRUE,FALSE,Seaweed Extract,50,Insecticidal Soap,12,28,150
+Fruits,Grapes,6.5,TRUE,FALSE,TRUE,Vermicompost,40,Neem Oil,17,52,160
+Fruits,Blueberry,3,TRUE,TRUE,TRUE,Peat Moss,31,Insecticidal Soap,18,64,140
+Fruits,Raspberry,2,TRUE,FALSE,FALSE,Manure,30,Garlic Spray,12,90,110
+Fruits,Papaya,3.22,TRUE,FALSE,FALSE,Compost,19,Diatomaceous Earth,15,73,210
+Fruits,Guava,3,TRUE,TRUE,FALSE,Seaweed Extract,36,Neem Oil,13,59,240
+Fruits,Fig,1.3,TRUE,FALSE,TRUE,Manure,17,Garlic Spray,19,35,200
+Fruits,Mulberry,0.5,TRUE,TRUE,TRUE,Vermicompost,16,Neem Oil,12,68,180
+Vegetables,Tomato,0.5,FALSE,TRUE,FALSE,Vermicompost,47,Neem Oil,11,104,80
+Vegetables,Cucumber,0.5,FALSE,TRUE,FALSE,Manure,28,Garlic Spray,15,84,60
+Vegetables,Bell Pepper,10.84,FALSE,FALSE,FALSE,Vermicompost,20,Insecticidal Soap,13,32,90
+Vegetables,Spinach,1.5,FALSE,TRUE,FALSE,Compost,15,Neem Oil,10,15,45
+Vegetables,Lettuce,1,FALSE,FALSE,TRUE,Seaweed Extract,26,Garlic Spray,20,102,55
+Vegetables,Zucchini,6,FALSE,FALSE,FALSE,Vermicompost,43,Neem Oil,16,20,70
+Vegetables,Carrot,0,FALSE,TRUE,FALSE,Compost,16,Diatomaceous Earth,12,68,85
+Vegetables,Eggplant,1.6,FALSE,TRUE,TRUE,Manure,11,Neem Oil,19,94,100
+Vegetables,Radish,0.68,FALSE,TRUE,FALSE,Vermicompost,36,Garlic Spray,18,19,30
+Vegetables,Kale,10,FALSE,FALSE,TRUE,Seaweed Extract,8,Neem Oil,14,92,55
+Legumes,Peas,0.45,FALSE,TRUE,FALSE,Compost,34,Diatomaceous Earth,10,82,65
+Legumes,Green Beans,4.3,FALSE,FALSE,FALSE,Manure,32,Insecticidal Soap,14,89,55
+Legumes,Lentils,0,FALSE,TRUE,FALSE,Compost,48,Neem Oil,13,97,95
+Legumes,Chickpeas,0,FALSE,TRUE,TRUE,Seaweed Extract,44,Garlic Spray,17,98,120
+Legumes,Soybeans,10,FALSE,FALSE,TRUE,Compost,10,Neem Oil,16,98,130
+Legumes,Black Beans,12,FALSE,TRUE,FALSE,Manure,37,Neem Oil,15,16,100
+Legumes,Pinto Beans,14,FALSE,TRUE,TRUE,Compost,33,Diatomaceous Earth,11,36,105
+Legumes,Kidney Beans,10,FALSE,TRUE,FALSE,Vermicompost,6,Garlic Spray,12,76,110
+Legumes,Mung Beans,13,FALSE,TRUE,FALSE,Manure,32,Insecticidal Soap,12,104,70
+Legumes,Fava Beans,10,FALSE,FALSE,TRUE,Urea,33,Neem Oil,17,27,95
+Flowers,Marigold,0,FALSE,TRUE,TRUE,Compost,33,Garlic Spray,14,48,50
+Flowers,Petunia,0,FALSE,TRUE,FALSE,Manure,41,Neem Oil,12,27,60
+Flowers,Rose,0,TRUE,TRUE,TRUE,Compost,8,Insecticidal Soap,17,85,180
+Flowers,Lavender,0,TRUE,TRUE,FALSE,Seaweed Extract,21,Garlic Spray,16,85,120
+Flowers,Jasmine,0,TRUE,TRUE,FALSE,Manure,16,Neem Oil,15,85,150
+Flowers,Daisy,0,FALSE,TRUE,TRUE,Compost,17,Insecticidal Soap,19,52,60
+Flowers,Sunflower,0,FALSE,TRUE,TRUE,Manure,46,Garlic Spray,18,71,75
+Flowers,Hibiscus,0,TRUE,TRUE,FALSE,Compost,7,Neem Oil,10,102,140
+Flowers,Geranium,0,FALSE,FALSE,FALSE,Seaweed Extract,33,Diatomaceous Earth,12,95,65
+Flowers,Zinnia,0,FALSE,TRUE,FALSE,Compost,32,Insecticidal Soap,14,19,45
+Medicinal,Tulsi (Holy Basil),0,TRUE,TRUE,TRUE,Manure,13,Garlic Spray,18,17,85
+Medicinal,Aloe Vera,0,TRUE,FALSE,FALSE,Vermicompost,17,Neem Oil,12,93,210
+Medicinal,Mint,0,TRUE,FALSE,TRUE,Manure,7,Insecticidal Soap,13,85,60
+Medicinal,Neem,0,TRUE,FALSE,FALSE,Compost,6,Garlic Spray,11,23,365
+Medicinal,Ashwagandha,0,FALSE,TRUE,FALSE,Seaweed Extract,19,Neem Oil,13,91,210
+Medicinal,Brahmi,0,TRUE,TRUE,TRUE,Manure,38,Insecticidal Soap,19,38,120
+Medicinal,Giloy,0,TRUE,TRUE,TRUE,Compost,18,Garlic Spray,17,41,240
+Medicinal,Lemongrass,0,TRUE,FALSE,TRUE,Seaweed Extract,10,Pyrethrin,16,105,120
+Medicinal,Gotu Kola,0,TRUE,FALSE,TRUE,Compost,16,Insecticidal Soap,12,21,210
+Medicinal,Coriander,0,FALSE,FALSE,FALSE,Manure,6,Neem Oil,15,38,45

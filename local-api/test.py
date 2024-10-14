@@ -6,13 +6,13 @@ url = "http://127.0.0.1:5000/recommend_crops"
 
 # Sample data for testing
 test_data = {
-    "terrace_size": 100,
-    "latitude": 12,
-    "longitude": 71,
+    "terrace_size": 10,
+    "latitude": 26,
+    "longitude": 80,
     "savings_weight": 0.3,
     "weight_carbon_absorption": 0.7,
     "budget": 2000,
-    "types": ["Fruits", "Vegetables"]
+    "types": ["Fruits", "Vegetables"],
 }
 
 def test_api():
@@ -30,9 +30,9 @@ def test_api():
             print(json.dumps(result, indent=2))
             
             # You can add more specific checks here, for example:
-            assert "recommended_plants" in result, "Missing 'recommended_plants' in response"
+            assert "allocated_plants" in result, "Missing 'allocated_plants' in response"
             assert "total_savings" in result, "Missing 'total_savings' in response"
-            assert "total_carbon_absorbed" in result, "Missing 'total_carbon_absorbed' in response"
+            assert "total_carbon_absorption" in result, "Missing 'total_carbon_absorbtion' in response"
             
             print("\nAll checks passed. The API is working as expected.")
         else:
