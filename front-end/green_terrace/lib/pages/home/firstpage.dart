@@ -30,16 +30,66 @@ class _FirstPageState extends State<FirstPage> {
   ];
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return  MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        // Defining the theme colors
+        primaryColor: Colors.green, // Green for buttons, AppBar, etc.
+        scaffoldBackgroundColor: Colors.black, // Black background for screens
+        iconTheme: IconThemeData(color: Colors.green), // Green icons
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(
+            color: Colors.green,
+          ),
+           bodyMedium: TextStyle(
+            color: Colors.green,
+          ),
+           bodySmall: TextStyle(
+            color: Colors.green,
+          ),
+          displaySmall: TextStyle(
+            color: Colors.green,
+          ),
+          headlineSmall: TextStyle(
+            color: Colors.grey[900]
+          ),
+          headlineLarge: TextStyle(
+            color: Colors.green
+          ),
+          titleSmall: TextStyle(
+            color: Colors.green,
+          ),
+          titleLarge: TextStyle(
+            color: Colors.green,
+          ),
+          titleMedium: TextStyle(
+            color: Colors.green,
+          ),
+        ),
+        listTileTheme: ListTileThemeData(
+          tileColor: Colors.grey[900],
+          textColor: Colors.green,
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.black, // Black AppBar background
+          titleTextStyle: TextStyle(
+            color: Colors.green[500],
+            fontSize: 25,
+            fontFamily: ""
+            ), // White AppBar text
+        ),
+        buttonTheme: ButtonThemeData(
+          buttonColor: Colors.green, // Green buttons
+        ),
+        dialogTheme: DialogTheme(
+          backgroundColor: Colors.grey[900]
+        ),
+      ),
+      home: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 136, 247, 140),
           title: Center(
             child: Text(
               "Green Terrace",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
               )
             ),
         ),
@@ -59,9 +109,10 @@ class _FirstPageState extends State<FirstPage> {
               BottomNavigationBarItem(
               icon: Icon(Icons.people),
               label: "Community",
-              )
+            )
           ]
         ),
-      );
+      ),
+    );
   }
 }

@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return const AuthGate(); // Firebase is initialized
+            return const AuthGate(); 
           }
           if (snapshot.hasError) {
             return Center(child: Text('Error initializing Firebase'));

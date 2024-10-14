@@ -49,7 +49,8 @@ class _EditPostPageState extends State<EditPostPage> {
           ),
         ],
       ),
-      body: Padding(
+      body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [

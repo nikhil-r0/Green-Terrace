@@ -22,12 +22,19 @@ class _MarketPageState extends State<MarketPage> {
     _loadCropTypes();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   // Fetch crop types from Firestore for dropdown
   void _loadCropTypes() async {
     List<String> cropTypes = await _firestoreService.getCropTypes();
-    setState(() {
-      _cropTypes = cropTypes;
-    });
+    if(mounted){
+      setState(() {
+        _cropTypes = cropTypes;
+      });
+    }
   }
 
   // Function to display the market items
@@ -61,6 +68,9 @@ class _MarketPageState extends State<MarketPage> {
   Widget _buildMarketCard(QueryDocumentSnapshot item, bool isCurrentUser) {
     return Card(
       child: ExpansionTile(
+        collapsedTextColor: Colors.green,
+        backgroundColor: Colors.grey[900],
+        textColor: Colors.green,
         title: Text('${item['vegetable']}'),
         subtitle: Text(item['isBarter'] ? 'Barter' : 'Price: ₹${item['price']} per kg'),
         trailing: Icon(Icons.arrow_drop_down),

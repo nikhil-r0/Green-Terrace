@@ -36,32 +36,35 @@ class _CreatePostPageState extends State<CreatePostPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Post Title'),
-            ),
-            Expanded(
-              child: quill.QuillEditor(
-                controller: _controller,
-                scrollController: ScrollController(),
-                configurations: const quill.QuillEditorConfigurations(
-                  scrollable: true, // Editor can be scrolled
-                  autoFocus: true,  // Automatically focus the editor
-                  expands: true,    // Expand the editor to fill available space
-                  padding: EdgeInsets.all(10), // Padding inside the editor
-                ),
-                focusNode: FocusNode(),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(labelText: 'Post Title'),
               ),
-            ),
-            quill.QuillToolbar.simple(
-            controller: _controller,
-            configurations: quill.QuillSimpleToolbarConfigurations(
-              multiRowsDisplay: false
-            )
-            ),
-          ],
+              Expanded(
+                child: quill.QuillEditor(
+                  controller: _controller,
+                  scrollController: ScrollController(),
+                  configurations: const quill.QuillEditorConfigurations(
+                    scrollable: true, // Editor can be scrolled
+                    autoFocus: true,  // Automatically focus the editor
+                    expands: true,    // Expand the editor to fill available space
+                    padding: EdgeInsets.all(10), // Padding inside the editor
+                  ),
+                  focusNode: FocusNode(),
+                ),
+              ),
+              quill.QuillToolbar.simple(
+              controller: _controller,
+              configurations: quill.QuillSimpleToolbarConfigurations(
+                multiRowsDisplay: false
+              )
+              ),
+            ],
+          ),
         ),
       ),
     );

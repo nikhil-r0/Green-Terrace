@@ -23,6 +23,8 @@ class PostWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
+            tileColor: Colors.white,
+            textColor: Colors.black,
             title: Text(post['title']),
             subtitle: Text(post['description']), // This can be formatted using rich text
             trailing: isCurrentUser

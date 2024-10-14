@@ -144,7 +144,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
     };
 
     try {
-      var url = Uri.parse('https://952d-2405-201-d046-b810-877a-c790-ba33-ccd9.ngrok-free.app/Green-Terrace');
+      var url = Uri.parse('http://192.168.1.101:4000/recommend_crops');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -235,9 +235,19 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
               labelText: 'What do you want to maximize?',
               border: OutlineInputBorder(),
             ),
+            dropdownColor: Colors.grey[900],
+            style: TextStyle(
+              color: Colors.green,
+            ),
             items: const [
-              DropdownMenuItem(value: 'Savings', child: Text('Savings')),
-              DropdownMenuItem(value: 'Carbon Absorption', child: Text('Carbon Absorption')),
+              DropdownMenuItem(
+              value: 'Savings', 
+              child: Text('Savings')
+            ),
+              DropdownMenuItem(
+                value: 'Carbon Absorption', 
+                child: Text('Carbon Absorption')
+              ),
             ],
             onChanged: (value) {
               setState(() {
@@ -312,6 +322,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
       return Column(
         children: _recommendedPlants!.map((plant) {
           return Card(
+            color: Colors.grey[900],
             margin: EdgeInsets.symmetric(vertical: 8),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -325,7 +336,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
                   SizedBox(height: 8),
                   Text('Savings: ${plant['savings'].toStringAsFixed(2)}'),
                   Text(
-                      'Carbon Absorption: ${plant['carbon_absorption'].toStringAsFixed(2)} kg'),
+                      'Carbon Absorption: ${plant['carbon_absorption']} kg'),
                   Text('Growing Price: ${plant['growing_price'].toStringAsFixed(2)}'),
                 ],
               ),
@@ -351,12 +362,12 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Select Crop Types"),
+      title: Text("Select Crop Types",style: TextStyle(color: Colors.green),),
       content: SingleChildScrollView(
         child: ListBody(
           children: widget.allItems.map((type) {
             return CheckboxListTile(
-              title: Text(type),
+              title: Text(type,style: TextStyle(color: Colors.green),),
               value: _selectedItems.contains(type),
               onChanged: (bool? value) {
                 setState(() {
@@ -374,7 +385,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(_selectedItems);
           },
           child: Text("Cancel"),
         ),
