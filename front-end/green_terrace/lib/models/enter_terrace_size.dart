@@ -144,7 +144,7 @@ class _TerraceSizeInputState extends State<TerraceSizeInput> {
     };
 
     try {
-      var url = Uri.parse('http://192.168.1.101:4000/recommend_crops');
+      var url = Uri.parse('http://192.168.4.89:4000/recommend_crops');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

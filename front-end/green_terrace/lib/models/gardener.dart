@@ -23,7 +23,7 @@ class _GardenerState extends State<Gardener> {
       _isLoading = true;
     });
 
-    final apiUrl = Uri.parse('http://192.168.1.101:4000/chatbot'); // Flask server's API endpoint
+    final apiUrl = Uri.parse('http://192.168.4.89:4000/chatbot'); // Flask server's API endpoint
 
     try {
       final response = await http.post(
