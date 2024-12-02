@@ -3,7 +3,7 @@
 ## Overview
 **Green Terrace** is an application designed for terrace farmers, both beginners and experienced gardeners. Our app leverages weather data from the user's location and a custom plant dataset to provide personalized farming suggestions. Whether you're growing flowers, vegetables, or fruits, Green Terrace tailors a farming plan just for you. The app also features a marketplace for buying or selling produce and tools, and a community space for sharing knowledge, guides, and tutorials. It connects users with nurseries, markets, and researchers, fostering a supportive ecosystem for terrace farming.
 
-The project was built for the **BuzzOnEarth India Hackathon 2024**, which focuses on leveraging AI for sustainable urban development. The hackathon’s theme is "Application of AI for sustainable development of cities," with a focus on energy, water, waste, mobility, air quality, governance, and biodiversity. Supported by Intel® Tiber Developer Cloud, participants utilize Intel’s AI Stack to create innovative solutions that address sustainability challenges on a city-wide scale.
+
 
 ## Key Features
 - **Personalized Crop Recommendations**: Based on local weather and a custom dataset, we suggest the best crops for your terrace garden.
